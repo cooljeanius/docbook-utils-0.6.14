@@ -80,10 +80,10 @@ SGML_BASE_DIR="@prefix@/share/sgml"
 SGML_CATALOGS_DIR="/etc/sgml"
 if [ -f "$SGML_CONF" ]
 then
-  RE='^[:space:]*SGML_BASE_DIR[:space:]*=[:space:]*'
-  SGML_BASE_DIR=`grep $RE $SGML_CONF | sed "s/$RE//"`
-  RE='^[:space:]*SGML_CATALOGS_DIR[:space:]*=[:space:]*'
-  SGML_CATALOGS_DIR=`grep $RE $SGML_CONF | sed "s/$RE//"`
+  RE='^[[:space:]]*SGML_BASE_DIR[[:space:]]*=[[:space:]]*'
+  SGML_BASE_DIR=`grep --color=never $RE $SGML_CONF | sed "s/$RE//"`
+  RE='^[[:space:]]*SGML_CATALOGS_DIR[[:space:]]*=[[:space:]]*'
+  SGML_CATALOGS_DIR=`grep --color=never $RE $SGML_CONF | sed "s/$RE//"`
 fi
 
 # Set frontend to use
@@ -246,7 +246,7 @@ then
   echo -e $SGML_HELP_MESSAGE >&2
   exit 1
 fi
-if [ ! -s $SGML_FRONTEND ]
+if [ ! -s "$SGML_FRONTEND" ]
 then
   echo "`basename $0`: There is no frontend called \"$SGML_FRONTEND\"." >&2
   exit 2
@@ -270,14 +270,14 @@ then
   echo -e $SGML_HELP_MESSAGE >&2
   exit 1
 fi
-if [ ! -s $SGML_FILE ]
+if [ ! -s "$SGML_FILE" ]
 then
   echo "`basename $0`: Cannot open \"$SGML_FILE\"." >&2
   exit 3
 fi
 
 # Separate the file name and the extension (if any)
-SGML_FILE_NAME=`basename $SGML_FILE`
+SGML_FILE_NAME=`basename "$SGML_FILE"`
 SGML_FILE_NAME=${SGML_FILE_NAME%.*}
 
 # Determine if we are in an XML file
@@ -312,7 +312,7 @@ case $SGML_STANDARD_CATALOGS in
 	  SGML_CATALOG_FILES=$SGML_CENTRALIZED_CATALOG
 	else
 	  SGML_CATALOG_FILES=`find $SGML_BASE_DIR -name catalog`
-	  SGML_CATALOG_FILES=`echo "$SGML_CATALOG_FILES" | tr [:space:] :`
+	  SGML_CATALOG_FILES=`echo "$SGML_CATALOG_FILES" | tr [[:space:]] :`
 	fi
 	;;
   no)	SGML_CATALOG_FILES=""
@@ -368,7 +368,7 @@ case "$SGML_OPTIONS" in
 	fi
 	if [ -n "$papersize" ]
 	then
-	  SGML_OPTIONS="-V paper-type=$papersize $SGML_OPTIONS"
+	  SGML_OPTIONS="-V %paper-type%=$papersize $SGML_OPTIONS"
 	fi
 	;;
 esac
@@ -405,9 +405,9 @@ then
   echo -e $SGML_HELP_MESSAGE >&2
   exit 1
 fi
-if [ ! -d $SGML_OUTPUT_DIRECTORY ]
+if [ ! -d "$SGML_OUTPUT_DIRECTORY" ]
 then
-  mkdir $SGML_OUTPUT_DIRECTORY 2>/dev/null
+  mkdir "$SGML_OUTPUT_DIRECTORY" 2>/dev/null
   if [ $? -ne 0 ]
   then
     echo "`basename $0`: Could not create \"$SGML_OUTPUT_DIRECTORY\" output directory" >&2
@@ -416,27 +416,29 @@ then
 fi
 
 # Prepare the parser's arguments
-SGML_ARGUMENTS="$SGML_INCLUDE -i $SGML_TYPE -d $SGML_STYLESHEET $SGML_OPTIONS $SGML_WARNINGS $SGML_DECL $SGML_FILE"
+SGML_ARGUMENTS="$SGML_INCLUDE -i $SGML_TYPE -d $SGML_STYLESHEET $SGML_OPTIONS $SGML_WARNINGS $SGML_DECL"
 
 # Call the backend
 echo "Using catalogs: `echo $SGML_CATALOG_FILES | sed 's/:/, /g'`"
 echo "Using stylesheet: $SGML_STYLESHEET"
 echo "Working on: $SGML_FILE"
-cd $SGML_OUTPUT_DIRECTORY
-export SGML_JADE SGML_FILE_NAME SGML_ARGUMENTS
+cd "$SGML_OUTPUT_DIRECTORY"
+export SGML_JADE SGML_FILE_NAME SGML_ARGUMENTS SGML_INCLUDE
 export SGML_CATALOG_FILES SGML_BASE_DIR SGML_FILE SGML_STYLESHEET
 NOCHUNKS=`echo $SGML_OPTIONS | grep nochunks`
 if [ -z "$NOCHUNKS" ]
 then
 	sh $SGML_BACKEND
 else
-	sh $SGML_BACKEND >$SGML_FILE_NAME.html
+	sh $SGML_BACKEND >"$SGML_FILE_NAME.html"
 fi
 SGML_RETURN=$?
-cd $SGML_CURRENT_DIRECTORY
+cd "$SGML_CURRENT_DIRECTORY"
 
 if [ $SGML_RETURN -gt 0 ]
 then exit `expr 7 + $SGML_RETURN`
 fi
-echo "Done."
+#Final echo commented out, it causes manpage noise when generating some
+#manpages with new perl(#513271, #587012)
+#echo "Done."
 exit 0

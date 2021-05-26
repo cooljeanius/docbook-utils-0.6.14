@@ -13,7 +13,7 @@ then
 elif [ -x /usr/bin/w3m ]
 then
   CONVERT=/usr/bin/w3m
-  ARGS="-dump"
+  ARGS="-T text/html -dump"
 else
   echo >&2 "No way to convert HTML to text found."
   exit 1
@@ -23,7 +23,7 @@ HTML=$(mktemp /tmp/html-XXXXXX) || exit 1
 trap 'rm -f "$HTML"; exit' 0 1 2 3 7 13 15
 
 # Convert to HTML
-$SGML_JADE -V nochunks -t sgml ${SGML_ARGUMENTS} >${HTML}
+$SGML_JADE -V nochunks -t sgml ${SGML_ARGUMENTS} "$SGML_FILE" >${HTML}
 if [ $? -ne 0 ]
 then exit 1
 fi

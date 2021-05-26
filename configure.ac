@@ -6,15 +6,20 @@ AC_CONFIG_AUX_DIR([build-aux])dnl
 
 AC_DEFUN([AC_FIND_PROGRAM],
 [
+AC_MSG_CHECKING([for a decent directory to use for $3])
 $3=""
 for i in $2; do
   for j in $1; do
     if test -x "$i/$j"; then
       $3=$i
+      AC_MSG_RESULT([$$3])
       break 2
     fi
   done
 done
+if test -z $$3; then
+  AC_MSG_RESULT([not found])
+fi
 ])dnl
 
 AM_INIT_AUTOMAKE
@@ -31,6 +36,12 @@ AC_PROG_LN_S
 jade_bindirs="/usr/bin /usr/local/bin"
 if test -n "${prefix}" && test -d "${prefix}" && test "${prefix}" != "/usr/local"; then
   jade_bindirs="${jade_bindirs} ${prefix}/bin"
+elif test -d /opt/local/bin; then
+  jade_bindirs="${jade_bindirs} /opt/local/bin"
+elif test -d /opt/sw/bin; then
+  jade_bindirs="${jade_bindirs} /opt/sw/bin"
+elif test -d /sw/bin; then
+  jade_bindirs="${jade_bindirs} /sw/bin"
 fi
 AC_FIND_PROGRAM([nsgmls onsgmls],[${jade_bindirs}],[jade_bindir])
 AC_SUBST([jade_bindir])dnl

@@ -2486,17 +2486,31 @@ fi
 jade_bindirs="/usr/bin /usr/local/bin"
 if test -n "${prefix}" && test -d "${prefix}" && test "${prefix}" != "/usr/local"; then
   jade_bindirs="${jade_bindirs} ${prefix}/bin"
+elif test -d /opt/local/bin; then
+  jade_bindirs="${jade_bindirs} /opt/local/bin"
+elif test -d /opt/sw/bin; then
+  jade_bindirs="${jade_bindirs} /opt/sw/bin"
+elif test -d /sw/bin; then
+  jade_bindirs="${jade_bindirs} /sw/bin"
 fi
 
+{ printf "%s\n" "$as_me:${as_lineno-$LINENO}: checking for a decent directory to use for jade_bindir" >&5
+printf %s "checking for a decent directory to use for jade_bindir... " >&6; }
 jade_bindir=""
 for i in ${jade_bindirs}; do
   for j in nsgmls onsgmls; do
     if test -x "$i/$j"; then
       jade_bindir=$i
+      { printf "%s\n" "$as_me:${as_lineno-$LINENO}: result: $jade_bindir" >&5
+printf "%s\n" "$jade_bindir" >&6; }
       break 2
     fi
   done
 done
+if test -z $jade_bindir; then
+  { printf "%s\n" "$as_me:${as_lineno-$LINENO}: result: not found" >&5
+printf "%s\n" "not found" >&6; }
+fi
 
 
 perl_bindirs="/usr/bin /usr/local/bin"
@@ -2504,15 +2518,23 @@ if test -n "${prefix}" && test -d "${prefix}" && test "${prefix}" != "/usr/local
   perl_bindirs="${perl_bindirs} ${prefix}/bin"
 fi
 
+{ printf "%s\n" "$as_me:${as_lineno-$LINENO}: checking for a decent directory to use for perl_bindir" >&5
+printf %s "checking for a decent directory to use for perl_bindir... " >&6; }
 perl_bindir=""
 for i in ${perl_bindirs}; do
   for j in perl; do
     if test -x "$i/$j"; then
       perl_bindir=$i
+      { printf "%s\n" "$as_me:${as_lineno-$LINENO}: result: $perl_bindir" >&5
+printf "%s\n" "$perl_bindir" >&6; }
       break 2
     fi
   done
 done
+if test -z $perl_bindir; then
+  { printf "%s\n" "$as_me:${as_lineno-$LINENO}: result: not found" >&5
+printf "%s\n" "not found" >&6; }
+fi
 
 
 # Output.

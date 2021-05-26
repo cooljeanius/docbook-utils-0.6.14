@@ -1,0 +1,162 @@
+<refentry id="backend-spec">
+  <docinfo>
+    <author>
+      <firstname>Jochem</firstname> <surname>Huhmann</surname>
+      <affiliation>
+        <address><email>joh@revier.com</email></address>
+      </affiliation>
+    </author>
+  </docinfo>
+  <refmeta>
+    <refentrytitle>backend-spec</refentrytitle>
+    <manvolnum>7</manvolnum>
+  </refmeta>
+  
+  <refnamediv>
+    <refname>backend-spec</refname>
+    <refpurpose>interface between jw and its backends</refpurpose>
+  </refnamediv>
+
+  <refsect1>
+    <title>Description</title>
+
+    <para><citerefentry> <refentrytitle>jw</refentrytitle>
+    <manvolnum>1</manvolnum> </citerefentry> calls backends like
+    <filename>backends/html</filename> to do the "real" conversion
+    work. The backend gets all necessary data delivered
+    via environment variables ready to use.</para>
+
+    <para>This documentation describes those environment variables.</para>
+
+    <para>The backend is run in the directory where the output
+    files are to be created. It should return 0 if there weren't any problem,
+    and return a positive value otherwise.</para>
+
+  </refsect1>
+
+  <refsect1>
+    <title>Variables</title>
+
+    <glosslist>
+      <glossentry>
+        <glossterm>
+          <envar>SGML_FILE_NAME</envar>
+        </glossterm>
+        <glossdef>
+          <para>The bare name of the source file</para>
+        </glossdef>
+      </glossentry>
+    </glosslist>
+
+    <para></para>
+
+    <glosslist>
+      <glossentry>
+        <glossterm>
+          <envar>SGML_FILE</envar>
+        </glossterm>
+        <glossdef>
+          <para>The full name and path of the source file</para>
+        </glossdef>
+      </glossentry>
+    </glosslist>
+
+    <para></para>
+
+    <glosslist>
+      <glossentry>
+        <glossterm>
+          <envar>SGML_JADE</envar>
+        </glossterm>
+        <glossdef>
+          <para>The name of the parser (usually
+          <application>Jade</application> or
+          <application>OpenJade</application>)</para>
+        </glossdef>
+      </glossentry>
+    </glosslist>
+
+    <para></para>
+
+    <glosslist>
+      <glossentry>
+        <glossterm>
+          <envar>SGML_ARGUMENTS</envar>
+        </glossterm>
+        <glossdef>
+          <para>The full argument-string for
+          <application>Jade</application> or
+          <application>OpenJade</application></para>
+        </glossdef>
+      </glossentry>
+    </glosslist>
+
+    <para></para>
+
+    <glosslist>
+      <glossentry>
+        <glossterm>
+          <envar>SGML_CATALOG_FILES</envar>
+        </glossterm>
+        <glossdef>
+          <para>The list of catalog files needed by
+          <application>Jade</application> or
+          <application>OpenJade</application></para>
+        </glossdef>
+      </glossentry>
+    </glosslist>
+
+    <para></para>
+
+    <glosslist>
+      <glossentry>
+        <glossterm>
+          <envar>SGML_STYLESHEET</envar>
+        </glossterm>
+        <glossdef>
+          <para>The style sheet to use</para>
+        </glossdef>
+      </glossentry>
+    </glosslist>
+
+    <para></para>
+
+    <glosslist>
+      <glossentry>
+        <glossterm>
+          <envar>SGML_BASE_DIR</envar>
+        </glossterm>
+        <glossdef>
+          <para>The base directory of the SGML system (default is
+          <filename>/usr/share/sgml</filename>)</para>
+        </glossdef>
+      </glossentry>
+    </glosslist>
+
+  </refsect1>
+
+  <refsect1>
+    <title>Files</title>
+
+  <para></para>
+
+  </refsect1>
+
+  <refsect1>
+    <title>See also</title>
+
+    <para><citerefentry> <refentrytitle>frontend-spec</refentrytitle>
+    <manvolnum>7</manvolnum> </citerefentry></para>
+
+  </refsect1>
+
+  <refsect1>
+    <title>Authors</title>
+
+    <para>Jochem Huhmann <email>joh@revier.com</email></para>
+
+  </refsect1>
+
+
+</refentry>
+

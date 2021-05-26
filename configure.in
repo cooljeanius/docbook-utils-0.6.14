@@ -1,0 +1,48 @@
+dnl Process this file with autoconf to produce a configure script.
+AC_INIT(Makefile.am)
+
+AC_DEFUN(AC_FIND_PROGRAM,
+[
+$3=""
+for i in $2; do
+  for j in $1; do
+    if test -x "$i/$j"; then
+      $3=$i
+      break 2
+    fi
+  done
+done
+])
+
+AM_INIT_AUTOMAKE(docbook-utils, 0.6.14)
+
+docdir='$(prefix)/doc'
+AC_SUBST(docdir)
+
+dnl Checks for programs.
+jade_bindirs="/usr/bin /usr/local/bin"
+AC_FIND_PROGRAM(nsgmls, $jade_bindirs, jade_bindir)
+AC_SUBST(jade_bindir)
+
+perl_bindirs="/usr/bin /usr/local/bin"
+AC_FIND_PROGRAM(perl, $perl_bindirs, perl_bindir)
+AC_SUBST(perl_bindir)
+
+dnl Checks for libraries.
+
+dnl Checks for header files.
+
+dnl Checks for typedefs, structures, and compiler characteristics.
+
+dnl Checks for library functions.
+
+AC_OUTPUT(Makefile docbook-utils.spec \
+	bin/Makefile bin/jw bin/sgmldiff \
+	backends/Makefile backends/man backends/texi \
+	frontends/Makefile frontends/docbook \
+	helpers/Makefile \
+	doc/Makefile \
+	doc/version \
+	doc/refentry/Makefile \
+	doc/man/Makefile \
+	doc/HTML/Makefile)

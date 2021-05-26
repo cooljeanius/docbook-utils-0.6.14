@@ -1,0 +1,11 @@
+# Backend to convert something into TeX
+# Send any comments to Eric Bischoff <eric@caldera.de>
+# This program is under GPL license. See LICENSE file for details.
+
+# Convert to TeX
+$SGML_JADE -t tex -o ${SGML_FILE_NAME}.tex $SGML_ARGUMENTS
+if [ $? -ne 0 ]
+then exit 1
+fi
+
+exit 0

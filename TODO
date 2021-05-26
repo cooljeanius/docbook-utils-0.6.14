@@ -1,0 +1,129 @@
+		PACKAGING
+
+- Directories should be owned
+
+- Use macros to ease porting
+
+- install-catalog has problems with updates because the post-install
+  is called before the post-uninstall
+
+
+		PRINTING
+
+- Support hyperlinks in acroread
+
+Hyperlinks are rendered nicely when converted to PDF, but aren't
+dynamical in acroread (they are just underlined text)
+
+- Support Asian languages on printing
+
+Already did some tries with hlatex (Korean)
+
+- Italian does not seem to work when printing
+
+Solved with the new packaging of jadetex?
+
+- Tables aren't rendered nicely when printing
+
+The second line of text and the following ones have no margin
+
+- Add a switch to control TeX verbosity
+
+
+		BACKENDS
+
+- Do a new text backend based on html2text instead of lynx
+
+Merge Jochem's stuff with the current text backend. The choice of
+the method should be passed through the command line or through an
+configuration file.
+
+- Do a FOT backend, MIF backend and a palm backend
+
+Should be easy. Use -V and -t variables.
+
+- Backend options
+
+Provide an -e option in jw to pass directly a string to the backend
+through the SGML_EXTRA_OPTS variable. The html backend then can pass
+it to Jade through the -V option.
+
+- Configuration file for backends
+
+Pass a variable holding the name of the initialization file to the
+backend.
+
+(is this really needed?)
+
+
+		JW
+
+- Configuration variables for jw
+
+Simpler and more powerful to use "aliases" ?
+
+Name:           SGML_BACKEND_DIR
+    Content:    Directory containing the backends.
+    Default:    $SGML_BASE_DIR/backends/
+    Example:	/usr/share/sgml/docbook/docbook-utils-0.2/backends/
+    Notes:      This directory should contain nothing else than backends. 
+                This way a program can tell the user about available
+                backends by just doing "ls $SGML_BACKEND_DIR" or similar.
+
+Name:           SGML_BACKEND
+    Content:    The name of the default backend
+    Default:    html
+(txt would be more neutral, but then be painful to the docbook users)
+    Example:	ps
+
+Name:           SGML_FRONTEND_DIR
+    Content:    Directory containing the frontends.
+    Default:    $SGML_BASE_DIR/frontends/
+    Example:	/usr/share/sgml/docbook/docbook-utils-0.2/frontends/
+    Notes:      This directory should contain nothing else than frontends. 
+                This way a program can tell the user about available
+                frontends by just doing "ls $SGML_FRONTEND_DIR" or similar.
+
+Name:           SGML_FRONTEND
+    Content:    The name of the default frontend
+    Default:    docbook
+(sgml would be more neutral, but then be painful to the docbook users)
+    Example:	tei
+    Notes:	At the time of determining the frontend, the frontend is not
+		known, so it is /etc/sgml/sgml.conf or $HOME/.sgml.conf
+		that is used as a configuration file.
+
+Name:           SGML_HELPERS_DIR
+    Content:    The name of the directory where reside the scripts that
+		can be called by the backends and the frontends
+    Default:    $SGML_BASE_DIR/helpers/
+    Example:	/usr/share/sgml/docbook/docbook-utils-0.2/helpers/
+
+Name:           SGML_OUTPUT_DIR
+    Content:    The directory to write the converted output files to.
+    Default:    .
+    Example:	/tmp
+    Note:	This is not backend-specific. If for example the html
+		backend wants to put the resulting files in an directory named
+		HTML, it can override or refine this setting.
+
+Name:           SGML_FILE
+    Content:    The filename of the SGML source-file to convert.
+    Default:    index.sgml
+    Example:	index.docbook
+
+Name:		SGML_JADE
+    Content:	The flavour of jade parser to execute
+    Default:	jade
+    Example:    openjade
+    Notes:	This variable is unused if using another parser
+
+Name:           SGML_STYLESHEET
+    Content:    The stylesheet to use
+    Default:    (unset)
+    Example:	/usr/share/sgml/docbook/kde-0.1/stylesheet/kde.dsl#html
+
+An "alias" on the contrary would concentrate all the options passed on the command
+line into a single symbol. Example:
+      htmlkde <=> -c /usr/share/sgml/docbook/kde-0.1/catalog
+                  -d /usr/share/sgml/docbook/kde-0.1/kde.dsl#html

@@ -1,0 +1,264 @@
+<refentry id="sgmldiff">
+  <docinfo>
+    <author>
+      <firstname>Frederik</firstname> <surname>Fouvry</surname>
+      <affiliation>
+        <address><email>fouvry@sfs.nphil.uni-tuebingen.de</email></address>
+      </affiliation>
+    </author>
+  </docinfo>
+  <refmeta>
+    <refentrytitle>sgmldiff</refentrytitle>
+    <manvolnum>1</manvolnum>
+  </refmeta>
+      
+  <refnamediv>
+    <refname>sgmldiff</refname>
+    <refpurpose>Find differences in the markup of two SGML files</refpurpose>
+  </refnamediv>
+      
+  <refsynopsisdiv>
+    <cmdsynopsis>
+      <command>sgmldiff</command>
+      <arg rep="repeat" choice="opt">options <synopfragmentref linkend="options-sgmldiff"></synopfragmentref></arg>
+      <arg choice="req"><replaceable>file1</replaceable></arg>
+      <arg choice="req"><replaceable>file2</replaceable></arg>
+
+      <synopfragment id="options-sgmldiff"><group>
+        <arg><option>-a</option></arg>
+        <arg><option>--attributes</option></arg><sbr>
+        <arg><option>-c</option> <group><arg>attributes</arg> <arg>nesting</arg> <arg>textpos</arg></group></arg>
+        <arg><option>--context</option> <group><arg>attributes</arg> <arg>nesting</arg> <arg>textpos</arg></group></arg><sbr>
+        <arg><option>-s</option></arg>
+        <arg><option>--statistics</option></arg><sbr>
+        <arg><option>-h</option></arg>
+        <arg><option>--help</option></arg><sbr>
+        <arg><option>-v</option></arg>
+        <arg><option>--version</option></arg>
+      </group></synopfragment>
+
+    </cmdsynopsis>
+  </refsynopsisdiv>
+
+  <refsect1>
+    <title>Description</title>
+
+    <para>This perl script allows to determine the structural differences
+    between two SGML files. It compares the files, regardless of what
+    is in between the tags, to only focus on the markup. Its output
+    is similar to <citerefentry> <refentrytitle>diff</refentrytitle>
+    <manvolnum>1</manvolnum></citerefentry>.</para>
+
+    <para>The typical use of <application>sgmldiff</application> is to
+    compare an SGML file with its translation into another language. If
+    the translation was done cleanly, <application>sgmldiff</application>
+    returns without finding any difference in the markup.</para>
+
+    <para>An example of a typical call to sgmldiff is:</para>
+
+    <screen>
+      sgmldiff english.sgml italiano.sgml
+    </screen>
+
+    <para>If there are differences in markup between both files,
+    <application>sgmldiff</application> will output a series of differences
+    reports summarized with lines of the form:
+    <variablelist>
+      <varlistentry>
+        <term>169a164</term>
+        <listitem><para>At line 169 of the first file, line 164 of the
+        second file has been added.</para></listitem>
+      </varlistentry>
+      <varlistentry>
+         <term>8a12,15</term>
+        <listitem><para>At line 8 of the first file, lines 12 to 15
+        of the second file have been added.</para></listitem>
+      </varlistentry>
+      <varlistentry>
+        <term>41d28</term>
+        <listitem><para>Line 41 of the first file has been destroyed, to
+        obtain line 28 of the second file.</para></listitem>
+      </varlistentry>
+      <varlistentry>
+        <term>63,66d61</term>
+        <listitem><para>Lines 63 to 66 of the first file have been
+        destroyed. to obtain line 61 of the second file.</para></listitem>
+      </varlistentry>
+      <varlistentry>
+        <term>52c51</term>
+        <listitem><para>Line 52 of the first file has been changed into
+        line 51 of the second file.</para></listitem>
+      </varlistentry>
+      <varlistentry>
+        <term>5,7c8,10</term>
+        <listitem><para>Lines 5 to 7 of the first file have been changed
+        into lines 8 to 10 of the second line.</para></listitem>
+      </varlistentry>
+    </variablelist>
+    In addition to those summaries, the lines of the first file are
+    shown preceeded by '<' and the lines of the second file are
+    shown preceeded by '>".</para>
+
+  </refsect1>
+
+  <refsect1>
+    <title>Options</title>
+
+    <para>Here is the list of actions that can be requested to
+    sgmldiff:</para>
+
+    <glosslist>
+      <glossentry>
+        <glossterm>
+          <cmdsynopsis><group>
+            <arg><option>-a</option></arg>
+            <arg><option>--attributes</option></arg>
+          </group></cmdsynopsis>
+        </glossterm>
+        <glossdef>
+          <para>Include the attribute values in the difference tests.
+          Don't set this value if the attributes are likely to be
+          translated. Set this value if the attributes value shouldn't
+          change between both files. Default is to don't include the
+          attributes in the difference tests.</para>
+        </glossdef>	  
+      </glossentry>
+
+      <glossentry>
+        <glossterm>
+          <cmdsynopsis><group>
+            <arg><option>-c</option> <group><arg>attributes</arg> <arg>nesting</arg> <arg>textpos</arg></group></arg>
+            <arg><option>--context</option> <group><arg>attributes</arg> <arg>nesting</arg> <arg>textpos</arg></group></arg>
+          </group></cmdsynopsis>
+        </glossterm>
+        <glossdef>
+          <para>Add more context to the difference. Since every test between the tags is removed before testing the differences, <application>sgmldiff</application> is likely to resynchronize itself at the wrong place, by thinking the location in both files correspond, while it's not true. By adding more context to the compared area, such risk is disminished.</para> 
+          <para>The allowed values for the <option>--context</option> option are:
+          <variablelist>
+            <varlistentry>
+              <term>attributes</term>
+              <listitem><para>Take into account the attribute
+              <emphasis>names</emphasis>. The attribute
+              <emphasis>values</emphasis> are controlled by the
+              <option>attributes</option> option.</para></listitem>
+            </varlistentry>
+            <varlistentry>
+              <term>nesting</term>
+              <listitem><para>Take into account the nesting level of all the compared tags.</para></listitem>
+            </varlistentry>
+            <varlistentry>
+              <term>textpos</term>
+              <listitem><para>Take into account the position in the text.</para></listitem>
+            </varlistentry>
+          </variablelist>
+          </para>
+        </glossdef>
+      </glossentry>
+
+      <glossentry>
+        <glossterm>
+          <cmdsynopsis><group>
+            <arg><option>-s</option></arg>
+            <arg><option>--statistics</option></arg>
+          </group></cmdsynopsis>
+        </glossterm>
+        <glossdef>
+          <para>Print some SGML information at the end.</para>
+        </glossdef>
+      </glossentry>
+
+      <glossentry>
+        <glossterm>
+          <cmdsynopsis><group>
+            <arg><option>-h</option></arg>
+            <arg><option>--help</option></arg>
+          </group></cmdsynopsis>
+        </glossterm>
+        <glossdef>
+          <para>Print a short help message and exit</para>
+        </glossdef>	  
+      </glossentry>
+
+      <glossentry>
+        <glossterm>
+          <cmdsynopsis><group>
+            <arg><option>-v</option></arg>
+            <arg><option>--version</option></arg>
+          </group></cmdsynopsis>
+        </glossterm>
+        <glossdef>
+          <para>Print the version identifier and exit</para>
+        </glossdef>	  
+      </glossentry>
+    </glosslist>      
+
+
+  </refsect1>
+
+  <refsect1>
+    <title>Files</title>
+
+    <para></para>
+
+  </refsect1>
+
+  <refsect1>
+    <title>Authors</title>
+
+    <glosslist>
+
+      <glossentry>
+        <glossterm>
+          Frederik Fouvry
+        </glossterm>
+        <glossdef>
+          <para>Developer of <application>sgmldiff</application>.</para>
+        </glossdef>
+      </glossentry>
+
+    </glosslist>
+
+  </refsect1>
+
+  <refsect1>
+    <title>See Also</title>
+
+    <glosslist>
+
+      <glossentry>
+        <glossterm>
+          <citerefentry> <refentrytitle>jw</refentrytitle> <manvolnum>1</manvolnum> </citerefentry>
+        </glossterm>
+        <glossdef>
+          <para>conversion from a SGML file to other file formats</para>
+        </glossdef>
+      </glossentry>
+
+      <glossentry>
+        <glossterm>
+<!-- Next line  is a hack to force a paragraph break in the man-page. -->
+<cmdsynopsis> <command></command> </cmdsynopsis>
+          <citerefentry> <refentrytitle>nsgmls</refentrytitle> <manvolnum>1</manvolnum> </citerefentry>
+        </glossterm>
+        <glossdef>
+          <para>a base component of <application>Jade</application> DSSSL engine</para>
+        </glossdef>
+      </glossentry>
+
+      <glossentry>
+        <glossterm>
+<!-- Next line  is a hack to force a paragraph break in the man-page. -->
+<cmdsynopsis> <command></command> </cmdsynopsis>
+          <ulink url="http://sources.redhat.com/docbook-tools/">http://sources.redhat.com/docbook-tools/</ulink>
+        </glossterm>
+        <glossdef>
+          <para>the home page of the DocBook tools, a compendium of
+          all tools necessary to process DocBook files, including
+          the DocBook-utils</para>
+        </glossdef>
+      </glossentry>
+
+    </glosslist>
+  </refsect1>
+
+</refentry>

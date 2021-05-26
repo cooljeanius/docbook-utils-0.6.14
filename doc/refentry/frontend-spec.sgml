@@ -1,0 +1,196 @@
+<refentry id="frontend-spec">
+  <docinfo>
+ <author>
+   <firstname>Eric</firstname> <surname>Bischoff</surname>
+   <affiliation>
+     <address><email>ebisch@cybercable.tm.fr</email></address>
+   </affiliation>
+ </author>
+  </docinfo>
+  <refmeta>
+ <refentrytitle>frontend-spec</refentrytitle>
+ <manvolnum>7</manvolnum>
+  </refmeta>
+   
+  <refnamediv>
+ <refname>frontend-spec</refname>
+ <refpurpose>interface between jw and its frontends</refpurpose>
+  </refnamediv>
+
+  <refsect1>
+    <title>Description</title>
+
+    <para><citerefentry> <refentrytitle>jw</refentrytitle>
+    <manvolnum>1</manvolnum> </citerefentry> calls frontends like
+    <filename>frontends/docbook</filename> to get the informations
+    specific to a given input format. The frontend knows which information
+    to return from the first command line parameter. It gets all necessary
+    data via environment variables ready to use.</para>
+
+    <para>This document describes that command line parameter and those
+    environment variables.</para>
+
+    <para>The frontend should return 0 if there weren't any problem,
+    and return a positive value otherwise.</para>
+
+  </refsect1>
+
+  <refsect1>
+    <title>Variables</title>
+
+    <glosslist>
+      <glossentry>
+        <glossterm>
+          <envar>$1</envar>
+        </glossterm>
+        <glossdef>
+          <para>The command line parameter, specifying which information
+          to return. It can take the following values:
+          <variablelist>
+            <varlistentry>
+              <term>centralized-catalog</term>
+              <listitem><para>The frontend must return the DTD-specific
+              centralized catalog name.  Centralized catalogs normally
+              reside in <filename>/etc/sgml</filename> and provide the
+              location of all the catalog files useful for handling
+              this input type (the catalog for the DTD, the catalog
+              for the stylesheets, the catalog for the entities,
+              ...)</para></listitem>
+            </varlistentry>
+            <varlistentry>
+              <term>style-sheet</term>
+              <listitem><para>The frontend must return the filename
+              of the style sheet to be used for this document type and
+              with the chosen backend.</para></listitem>
+            </varlistentry>
+          </variablelist>
+          </para>
+        </glossdef>
+      </glossentry>
+    </glosslist>
+
+    <para></para>
+
+    <glosslist>
+      <glossentry>
+        <glossterm>
+          <envar>SGML_CATALOGS_DIR</envar>
+        </glossterm>
+        <glossdef>
+          <para>The directory where the centralized catalogs reside. It is normally
+            <filename>/etc/sgml</filename>.</para>
+          <para>(This variable is valid only while determining
+            the centralized catalog to use.)</para>
+        </glossdef>
+      </glossentry>
+    </glosslist>
+
+    <para></para>
+
+    <glosslist>
+      <glossentry>
+        <glossterm>
+          <envar>SGML_BASE_DIR</envar>
+        </glossterm>
+        <glossdef>
+          <para>The base directory of the SGML system. It is normally
+            <filename>/usr/share/sgml</filename>.</para>
+          <para>(This variable is valid only while determining
+            the style sheet to use.)</para>
+        </glossdef>
+      </glossentry>
+    </glosslist>
+
+    <para></para>
+
+    <glosslist>
+      <glossentry>
+        <glossterm>
+          <envar>SGML_FILE</envar>
+        </glossterm>
+        <glossdef>
+          <para>The name of the file to convert.</para>
+          <para>(This variable is valid only while determining
+            the centralized catalog to use.)</para>
+        </glossdef>
+      </glossentry>
+    </glosslist>
+
+    <para></para>
+
+    <glosslist>
+      <glossentry>
+        <glossterm>
+          <envar>SGML_TYPE</envar>
+        </glossterm>
+        <glossdef>
+          <para>The type of the backend to use, whether it produces output
+            files to be displayed online or to be printed out.
+            It can take the value <constant>html</constant> or
+            <constant>print</constant>.</para>
+          <para>(This variable is valid only while determining
+            the style sheet to use).</para>
+        </glossdef>
+      </glossentry>
+    </glosslist>
+
+    <para></para>
+
+    <glosslist>
+      <glossentry>
+        <glossterm>
+          <envar>SGML_STYLESHEETS</envar>
+        </glossterm>
+        <glossdef>
+          <para>The desired custom stylesheet type, either <constant>none</constant>
+	    or <constant>default</constant>.
+	    If <constant>none</constant>, the frontend must return the file name of
+	    the style sheet provided by the system beneath the docbook-utils.
+	    If <constant>default</constant>, the frontend must return the custom
+	    stylesheet provided by the docbook-utils.</para>
+          <para>(This variable is valid only while determining
+            the style sheet to use).</para>
+        </glossdef>
+      </glossentry>
+    </glosslist>
+
+    <glosslist>
+      <glossentry>
+        <glossterm>
+          <envar>SGML_XML</envar>
+        </glossterm>
+        <glossdef>
+          <para>The metalanguage of the file to convert, either <constant>sgml</constant>
+	    or <constant>xml</constant>.</para>
+          <para>(This variable is valid only while determining
+            the centralized catalog to use).</para>
+        </glossdef>
+      </glossentry>
+    </glosslist>
+
+  </refsect1>
+
+  <refsect1>
+     <title>Files</title>
+
+    <para></para>
+
+  </refsect1>
+
+  <refsect1>
+    <title>See also</title>
+
+    <para><citerefentry>
+      <refentrytitle>backend-spec</refentrytitle>
+      <manvolnum>7</manvolnum>
+    </citerefentry></para>
+  </refsect1>
+
+  <refsect1>
+    <title>Authors</title>
+
+    <para>Jochem Huhmann <email>joh@revier.com</email></para>
+
+  </refsect1>
+
+</refentry>

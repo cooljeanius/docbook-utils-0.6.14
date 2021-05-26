@@ -1,0 +1,449 @@
+#!@perl_bindir@/perl -w
+
+# Structurally diffs two SGML/XML files.
+# Copyright (C) 2000 Frederik Fouvry
+# 
+# This program is free software; you can redistribute it and/or modify
+# it under the terms of the GNU General Public License as published by
+# the Free Software Foundation; either version 2 of the License, or
+# (at your option) any later version.
+# 
+# This program is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+# GNU General Public License for more details.
+# 
+# You should have received a copy of the GNU General Public License
+# along with this program; if not, write to the Free Software
+# Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
+# 
+# Send bug reports, comments, suggestions, improvements etc. to
+# Frederik Fouvry <fouvry@sfs.nphil.uni-tuebingen.de>.
+
+use strict;
+use integer;
+use vars qw($nsgmls $errors $errorlog $VERSION);
+use Getopt::Long 2.01;
+
+$VERSION = 1.03;
+
+my $nsgmls;
+$nsgmls = "@jade_bindir@/nsgmls";
+
+#----------------------------------------------------------------------
+# TODO:
+# - add text occurrences to diff file, such that diff has a bit more
+#   context; it might help in some cases (and perhaps ruin it in others).
+# - Wait for suggestions ;-)
+# 
+# Note: the input file need not be valid, nor is it necessary to have 
+# the DTDs.  nsgmls always returns a structure.
+#----------------------------------------------------------------------
+
+# Get file name
+chomp(my $progname = `basename $0`);
+
+my ($opt_a, $opt_s, $opt_h, $opt_v, $opt_c) = (0, 0, 0, 0, "");
+&GetOptions("h|help" => \$opt_h, 
+	    "v|version" => \$opt_v, 
+	    "s|statistics!" => \$opt_s, 
+	    "a|attributes!" => \$opt_a,
+	    "c|context=s" => \$opt_c);
+		    # -a includes the attribute values in the diff
+                    # -s prints external entity information at the end
+                    # -h prints help
+                    # -v prints version
+                    # -c add some context to improve the diff results
+
+if ($opt_v == 1) {
+    print STDOUT "DocBook-utils version @VERSION@ (sgmldiff v$VERSION)\n";
+    exit 0;
+};
+
+# Check number of arguments
+if ($opt_h == 1 || @ARGV != 2) {
+    print STDERR "DocBook-utils version @VERSION@ (sgmldiff v$VERSION)
+
+Usage: $progname [options] file1 file2
+        where the options are:
+	      -a, --attributes includes the attribute values in the diff
+	      -s, --statistics prints some SGML information at the end
+              -h, --help       prints this usage information
+              -v, --version    prints the version on the standard output
+              -c, --context    adds more context to the diff, which may
+                  improve the results.  It takes \"attributes\", \"textpos\"
+                  or \"nesting\" as an argument e.g. -c textpos, which can 
+                  also be combined: -c nesting,attributes
+
+";
+    exit 0;
+};
+
+$opt_a = 1 if $opt_c =~ /attributes/; # -c attributes = -a
+
+# Initialise
+my $file1 = $ARGV[0];
+my $diff1 = "$file1.difftmp$$";
+my $file2 = $ARGV[1];
+my $diff2 = "$file2.difftmp$$";
+$errors = "-E0 -e -g"; # allow any number of errors
+                       # and show precise context position of error
+$errorlog = "-f /dev/null";
+my $indent = "";
+
+# Get structure of the files
+my ($lines1,@allfile1) = &prepare($file1, $diff1);
+my ($lines2,@allfile2) = &prepare($file2, $diff2);
+my @lines1 = split(/@/,$lines1);
+my @lines2 = split(/@/,$lines2);
+
+# Do diff and rebuild the original input
+open(SDIFF,"diff $diff1 $diff2 |");
+$_ = <SDIFF>;
+while (defined($_)) {
+    chomp $_;
+    my ($start1, $start2, $command, $d1, $d2, $end1, $end2);
+    # New difference
+    if ($_ =~ /^(\d+)(,(\d+))?([acd])(\d+)(,(\d+))?$/) {
+	$start1 = $1-1;
+	$command = $4;
+	$start2 = $5-1;
+	if (defined $3) { $d1 = $3-$1; } else { $d1 = 0; }; 
+	if (defined $7) { $d2 = $7-$5; } else { $d2 = 0; }; 
+    };
+    $end1 = $start1+$d1; 
+    $end2 = $start2+$d2;
+    print "$lines1[$start1]"
+	  .($lines1[$end1] > $lines1[$start1] ? ",$lines1[$end1]" : "")
+	  ."$command$lines2[$start2]"
+	  .($lines2[$end2] > $lines2[$start2] ? ",$lines2[$end2]" : "")
+	  ."\n";
+    # Print lines of first file
+    $_ = <SDIFF>;
+    while (defined $_ && /^< /) {
+	print &normalise_text($allfile1[$start1++],"< ");
+	$_ = <SDIFF>;
+    };
+    undef $start1;
+    print "---\n";
+    # Print lines of second file
+    $_ = <SDIFF> if defined($_) && $_ =~ /^---$/;
+    while (defined $_ && /^> /) {
+	print &normalise_text($allfile2[$start2++],"> ");
+	$_ = <SDIFF>;
+    };
+    undef $start2;
+};
+close(SDIFF);
+
+# Clean up
+unlink $diff1;
+unlink $diff2;
+
+#---------------------------------------------------------------------
+# Process nsgmls output: keep all stuff that is important for the
+# structure comparison.  Make two structures: one that is diffed
+# (without text) (DIFF) and one that is used to present the
+# differences to the user (@full).  For more info: see SP
+# documentation, nsgmls output format.
+
+sub prepare {
+    my($filename,$todiffname) = @_;
+    my @full = ();
+    my @attributes;
+    my @e_attributes;
+    my ($system_identifier, $public_identifier, $f_info, $empty) = ("", "", "");
+    my %statistics = (notation => {},
+		      text => {},
+		      external_data => {},
+		      subdocument => {},
+		      files => {});
+    my @line_numbered = ();
+    my $line = 0;
+
+    open(ESIS, "$nsgmls -l $errors $errorlog -onotation-sysid -oid -oempty $filename | ");  #-oentity generates strange output; ? -ononsgml
+    open(DIFF, "> $todiffname");
+    while (<ESIS>) {
+	chomp $_;
+	if ($_ =~ /^\((.+)$/) {
+	    print DIFF "$indent<$1";
+	    print DIFF " ".join(" ",@attributes)
+		if (@attributes > 0 && defined($opt_a) && $opt_a == 1);
+	    print DIFF ">\n";
+	    push @line_numbered, "$line";	    
+	    push @full, "$indent<$1".(@attributes > 0 ? " ".join(" ",@attributes) : "").">\n";
+	    @attributes = ();
+	    $indent .= " " if $opt_c =~ /nesting/;
+	} elsif ($_ =~ /^\)(.+)$/) {
+	    my $gi = $1;
+	    $indent = substr($indent,0,-1) if $opt_c =~ /nesting/;
+	    push @line_numbered, "$line" unless $empty;	    
+	    push @full, "$indent</$gi>\n" unless $empty;
+	    print DIFF "$indent</$gi>\n" unless $empty;
+	    $empty = 0;
+	} elsif ($_ =~ /^-(.*)$/) {
+	    my $data = $1;
+	    my @a = split(/\\n/, $data);
+	    push @line_numbered, "$line";	    
+	    push @full, "$data\n";
+	    $line += $#a;
+	    print DIFF ($opt_c =~ /textpos/ ? "-" : "")."\n";
+	} elsif ($_ =~ /^\&(.*)$/) {
+	    print DIFF "&$1;";
+	    push @line_numbered, "$line";	    
+	    push @full, "&$1;";
+	} elsif ($_ =~ /^\?(.*)$/) {
+	    print DIFF "<?$1>\n";
+	    push @line_numbered, "$line";	    
+	    push @full, "<?$1>\n";
+	} elsif ($_ =~ /^A(\S+)\s+(IMPLIED|CDATA (.*)|NOTATION (.*)|ENTITY (.*)|TOKEN (.*)|ID (.*))$/) {
+		my $attr = $1;
+		my $val = $2;
+		if ($val eq "IMPLIED") {
+                    # don't print anything
+		} elsif ($val =~ /^CDATA (.*)$/) {
+		    @attributes = (@attributes, "$attr=\"$1\"");
+		} elsif ($val =~ /^NOTATION (.*)$/) {
+		    @attributes = (@attributes, "$attr=\"$1\"");
+		} elsif ($val =~ /^ENTITY (.*)$/) {
+		    @attributes = (@attributes, "$attr=\"$1\"");
+		} elsif ($val =~ /^TOKEN (.*)$/) {
+		    @attributes = (@attributes, "$attr=\"$1\"");
+		} elsif ($val =~ /^ID (.*)$/) {
+		    @attributes = (@attributes, "$attr=\"$1\"");
+		} else {
+		    warn "Unrecognised construction `$val'";
+		};
+	} elsif ($_ =~ /^D(\S+)\s+(IMPLIED|CDATA (.*)|NOTATION (.*)|ENTITY (.*)|TOKEN (.*)|ID (.*))$/) {
+	    # as yet never printed out
+	    if ($opt_a == 1) {
+		my $attr = $1;
+		my $val = $2;
+		if ($val eq "IMPLIED") {
+                    # don't print anything
+		} elsif ($val =~ /^CDATA (.*)$/) {
+		    @e_attributes = (@e_attributes, "$attr=\"$1\"");
+		} elsif ($val =~ /^NOTATION (.*)$/) {
+		    @e_attributes = (@e_attributes, "$attr=\"$1\"");
+		} elsif ($val =~ /^ENTITY (.*)$/) {
+		    @e_attributes = (@e_attributes, "$attr=\"$1\"");
+		} elsif ($val =~ /^TOKEN (.*)$/) {
+		    @e_attributes = (@e_attributes, "$attr=\"$1\"");
+		} elsif ($val =~ /^ID (.*)$/) {
+		    @e_attributes = (@e_attributes, "$attr=\"$1\"");
+		} else {
+		    warn "Unrecognised construction `$val'";
+		};
+	    } else { };
+	} elsif ($_ =~ /^a(\S+)\s+(\S+)\s+(.*)$/) {
+	    my_warn($_);
+	} elsif ($_ =~ /^N(.*)$/) {
+	    $statistics{notation}->{$1}->{pubid} = "$public_identifier"
+		unless $public_identifier eq "";
+	    $statistics{notation}->{$1}->{sysid} = "$system_identifier"
+		unless $system_identifier eq "";
+	    $statistics{notation}->{$1}->{emsysid} = "$f_info"
+		unless $f_info eq "";
+	    $system_identifier = "";
+	    $public_identifier = "";
+	    $f_info = "";
+	} elsif ($_ =~ /^E(\S+)\s+(CDATA|NDATA|SDATA)\s+(.*)$/) {
+	    $statistics{external_data}->{$1}->{pubid} = "$public_identifier $2 $3"
+		unless $public_identifier eq "";
+	    $statistics{external_data}->{$1}->{sysid} = "$system_identifier $2 $3"
+		unless $system_identifier eq "";
+	    $statistics{external_data}->{$1}->{emsysid} = "$f_info"
+		unless $f_info eq "";
+	    $system_identifier = "";
+	    $public_identifier = "";
+	    $f_info = "";
+	} elsif ($_ =~ /^I(\S+)\s+(CDATA|SDATA|PI|TEXT)\s+(.*)$/) {
+	    my $typ = $2;
+	    my $name = $1;
+	    my $val = $3;
+	    if ($typ =~ /^CDATA$/) {
+		push @full, "$val";
+		push @line_numbered, "$line";	    
+		print DIFF "$val";
+	    } elsif ($typ =~ /^SDATA$/) {
+		my_warn($typ);
+	    } elsif ($typ =~ /^PI$/) {
+		my_warn($typ);
+	    } elsif ($typ =~ /^TEXT$/) {
+		my_warn($typ);
+	    } else {
+		my_warn($typ);
+	    };
+	} elsif ($_ =~ /^S(.*)$/) {
+	    $statistics{subdocument}->{$1}->{pubid} = "$public_identifier"
+		unless $public_identifier eq "";
+	    $statistics{subdocument}->{$1}->{sysid} = "$system_identifier"
+		unless $system_identifier eq "";
+	    $statistics{subdocument}->{$1}->{emsysid} = "$f_info"
+		unless $f_info eq "";
+	    $system_identifier = "";
+	    $public_identifier = "";
+	    $f_info = "";
+	} elsif ($_ =~ /^T(.*)$/) {
+	    $statistics{text}->{$1}->{pubid} = "$public_identifier"
+		unless $public_identifier eq "";
+	    $statistics{text}->{$1}->{sysid} = "$system_identifier"
+		unless $system_identifier eq "";
+	    $statistics{text}->{$1}->{emsysid} = "$f_info"
+		unless $f_info eq "";
+	    $system_identifier = "";
+	    $public_identifier = "";
+	    $f_info = "";
+	} elsif ($_ =~ /^s(.*)$/) {
+	    $system_identifier = "$1";
+	} elsif ($_ =~ /^p(.*)$/) {
+	    $public_identifier = "$1";
+	} elsif ($_ =~ /^f(.*)$/) {
+	    $f_info = "$1";
+	} elsif ($_ =~ /^{(.*)$/) {
+	    my_warn($_);
+	} elsif ($_ =~ /^}(.*)$/) {
+	    my_warn($_);
+	} elsif ($_ =~ /^L((\d+)( (.+))?)$/) {
+	    $line = $2;
+	    # only line is set; nothing else is done
+	    # print DIFF "----------$4----------\n" if defined($4); 
+	    # push @full, (defined($4) ? "----------$4----------\n" : "")."L$line\n";
+	    # push @line_numbered, "$line";
+	    $statistics{files}->{$4} = 1 if defined $4;
+	} elsif ($_ =~ /^#(.*)$/) {
+	    my_warn($_);
+	} elsif ($_ =~ /^C$/) {
+	    print STDERR "====================\n";
+	    print STDERR "The file `$filename' is a valid document.\n";
+	} elsif ($_ =~ /^i$/) {
+	    # don't do anything
+	    # only output with the option -oincluded
+	    # for elements that are allowed by inclusion exception
+	} elsif ($_ =~ /^e$/) {
+	    $empty = 1;
+	    # only output with the option -oempty
+	} else {
+	    warn "Unrecognised construction `$_'";
+	};
+    };
+    close(DIFF);
+    close(ESIS);
+    if (defined $opt_s && $opt_s == 1) {
+	print STDERR "--------------------\n";
+	print STDERR "Used SGML text files:\n" 
+	    unless keys(%{$statistics{files}}) == 0;
+	foreach my $f (keys %{$statistics{files}}) {
+	    print STDERR "  $f\n";
+	};
+	delete $statistics{files};
+	my $stat_text = "";
+	foreach my $k (keys %statistics) {
+	    my $stat_text1;
+	    if ($k eq "external_data") { $stat_text1 .= "<!ENTITY"; }
+	    elsif ($k eq "notation") { $stat_text1 .= "<!NOTATION"; }
+	    elsif ($k eq "subdocument") { $stat_text1 .= "<!SUBDOC"; }
+	    elsif ($k eq "text") { $stat_text1 .= "Entity"; }
+	    else { die "Wrong statistics value"};
+	    foreach my $l (keys %{$statistics{$k}}) {
+		$stat_text .= "$stat_text1 $l ";
+		foreach my $m (keys %{$statistics{$k}->{$l}}) {
+		    my $value = "$statistics{$k}->{$l}->{$m}";
+		    if ($m eq "pubid" && defined($value)) {
+			$stat_text .= "PUBLIC \"$value\">\n";
+		    } elsif ($m eq "sysid" && defined($value)) {
+			$stat_text .= "SYSTEM \"$value\">\n";
+		    };
+		};
+		my $value = $statistics{$k}->{$l}->{emsysid};
+		if (defined($value) && $value ne "") {
+		    $value =~ s/^<(.*)>(.*)/$2/o, my $si = $1;
+		    $si =~ s/^osfile$/FILE/io;
+		    $stat_text .= "  Full name of system identifier ($si) actually referred to:\n  \"$value\"\n";
+		} else {
+		    $stat_text .= "  No system identifier could be generated\n";
+		};
+	    }; 
+	};
+	if ($stat_text ne "") {
+	    print STDERR "SGML information for `$filename':\n$stat_text";
+	} else {
+	    print STDERR "No SGML information for `$filename'\n"
+	}; 
+    };
+    return (join("@",@line_numbered),@full);
+};
+
+#----------------------------------------------------------------------
+# Normalise data text from nsgmls (i.e. don't print the escaped text).
+sub normalise_text {
+    my($string,$prefix) = @_;
+    my $result = "$prefix";
+    my @string;
+    my ($char,$state,$c);
+
+    @string = split(//,$string);
+    foreach $c (@string) {
+	if (defined $state) { # we're in an escape sequence
+	    if ($state eq "escape") { # which just started
+		if ($c eq "\\") { # slash
+		    $result .= $c;
+		    undef $state;
+		} elsif ($c eq "|") { # pipe
+		    warn "Unresolved SDATA "; 
+		    $result .= $c; 
+		    undef $state;
+		} elsif ($c eq "n") { # newline
+		    $result .= "\n$prefix";
+		    undef $state;
+		} elsif ($c eq "%" || $c eq "#") { # character
+		# `\\#\d+;' is character number in internal character set
+		# (if not representable by output encoding)
+		# `\\%\d+;' is character number in document character set
+		# (numeric char ref to non-SGML chars in fixed char set mode)
+		    $char = "";
+		    $state = "decchar";
+		} elsif ($c =~ /^[0-7]$/) { # character
+		    $char = $c;
+		    $state = "octchar";
+		} else {
+		    die "Unrecognised construction"; 
+		}; 
+	    } elsif ($state eq "decchar") { # reading a character code
+		if ($c ne ";") {
+		    $char .= $c;
+		} else {
+		    $result .= chr($char);
+		    undef $char;
+		    undef $state;
+		};
+	    } elsif ($state eq "octchar") { # reading a charactre code
+		if (length($char) < 2) {
+		    $char .= $c;
+		} else { # length == 2
+		    $result .= chr(oct($char.$c));
+		    undef $state;
+		    undef $char;
+		};
+	    } else {
+		die "State `$state' does not exist, stopped ";
+	    }; 
+	} elsif ($c eq "\\") { # an escape starts
+	    $state = "escape";
+	} else {               # normal case
+	    $result .= $c;
+	};
+    }; 
+
+    return $result;
+}; 
+
+#----------------------------------------------------------------------
+sub my_warn {
+    my ($a) = @_;
+    warn "`$a' not implemented yet.
+Please send a message to the maintainer (see source file) and include 
+an example (e.g. the input that caused this message)";
+}; 
+
+1;

@@ -1,0 +1,11 @@
+# Backend to convert a DocBook file into a texinfo file
+# Send any comments to Jochem Huhmann <joh@revier.com>
+# This program is under GPL license. See LICENSE file for details.
+
+# Convert to texinfo
+nsgmls $SGML_FILE | sgmlspl $SGML_BASE_DIR/docbook/utils-@VERSION@/helpers/docbook2texi-spec.pl >$SGML_FILE_NAME.texi
+if [ $? -ne 0 ]
+then exit 1
+fi
+
+exit 0

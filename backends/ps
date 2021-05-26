@@ -1,0 +1,49 @@
+# Backend to convert something into PostScript
+# Send any comments to Eric Bischoff <eric@caldera.de>
+# This program is under GPL license. See LICENSE file for details.
+
+TEXINPUTS="$(dirname "${SGML_FILE}"):${TEXINPUTS}"
+export TEXINPUTS
+
+# Convert to TeX
+$SGML_JADE -t tex -o ${SGML_FILE_NAME}.tex $SGML_ARGUMENTS
+if [ $? -ne 0 ]
+then exit 1
+fi
+
+# Convert from TeX to DVI
+jadetex ${SGML_FILE_NAME}.tex >${SGML_FILE_NAME}.tmp
+if [ $? -ne 0 ]
+then
+  cat ${SGML_FILE_NAME}.tmp
+  rm ${SGML_FILE_NAME}.tmp
+  rm ${SGML_FILE_NAME}.tex
+  exit 2
+fi
+rm ${SGML_FILE_NAME}.tmp
+
+# If there are unresolved references, re-run jadetex, twice 
+if egrep '^LaTeX Warning: There were undefined references.$' ${SGML_FILE_NAME}.log >/dev/null 2>&1
+then
+    jadetex ${SGML_FILE_NAME}.tex >/dev/null
+    jadetex ${SGML_FILE_NAME}.tex >/dev/null
+fi
+rm -f ${SGML_FILE_NAME}.log ${SGML_FILE_NAME}.aux \
+	${SGML_FILE_NAME}.tex ${SGML_FILE_NAME}.out
+
+# Convert from DVI to PostScript
+PAPERSIZE="-t letter"
+if echo x$SGML_ARGUMENTS | grep -- '-V paper-type=A4'
+then
+  PAPERSIZE="-t a4"
+fi
+
+dvips -R -q $PAPERSIZE ${SGML_FILE_NAME}.dvi -o ${SGML_FILE_NAME}.ps
+if [ $? -ne 0 ]
+then
+  rm ${SGML_FILE_NAME}.dvi
+  exit 3
+fi
+rm ${SGML_FILE_NAME}.dvi
+
+exit 0

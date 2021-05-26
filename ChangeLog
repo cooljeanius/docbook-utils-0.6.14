@@ -1,0 +1,432 @@
+2004-02-11  Tim Waugh  <twaugh@redhat.com>
+
+	* configure.in: Version 0.6.14 (stable).
+
+2004-02-11  Tim Waugh  <twaugh@redhat.com>
+
+	* backends/txt: Use w3m as last resort.
+
+2003-06-10  Tim Waugh  <twaugh@redhat.com>
+
+	* helpers/docbook2man-spec.pl: Escape dots and single quotes in
+	column 1 (Red Hat bugzilla bug #97087).
+
+2003-04-30  Tim Waugh  <twaugh@redhat.com>
+
+	* bin/jw.in: Use head(1) in a POSIX-compliant manner.
+
+2003-03-17  Tim Waugh  <twaugh@redhat.com>
+
+	* configure.in: Version 0.6.13 (stable).
+
+2003-03-17  Tim Waugh  <twaugh@redhat.com>
+
+	* backends/ps: Pass -R to dvips.
+
+	* backends/ps: Specify paper type when using dvips.
+
+	* backends/pdf: Use rm -f when tidying up.
+
+	* bin/jw.in: The DSSSL parameter is paper-type, not paper-size.
+
+2003-02-11  Tim Waugh  <twaugh@redhat.com>
+
+	* doc/refentry/sgmldiff.sgml: Fix typos (pointed out by Alain
+	PORTAL).
+
+2003-01-13  Tim Waugh  <twaugh@redhat.com>
+
+	* backends/ps, backends/dvi: Use .tmp not .out for temporary
+	stuff (debian bug 176204).
+
+2002-11-02  Tim Waugh  <twaugh@redhat.com>
+
+	* frontends/docbook.in: Fix stupid typo spotted by Masanori
+	Kobayasi.
+
+2002-10-21  Tim Waugh  <twaugh@redhat.com>
+
+	* doc/refentry/jw.sgml: Fix URL.
+	* doc/refentry/sgmldiff.sgml: Likewise.
+
+2002-10-14  Tim Waugh  <twaugh@redhat.com>
+
+	* helpers/docbook2man-spec.pl: Translatable 'name' heading
+	(Philippe Batailler).
+
+	* helpers/docbook2man-spec.pl: Use 'lang' attribute in output
+	filename (Denis Barbier).
+
+2002-10-13  Tim Waugh  <twaugh@redhat.com>
+
+	* configure.in: Version 0.6.12 (stable).
+
+2002-08-05  Tim Waugh  <twaugh@redhat.com>
+
+	* backends/texi.in: Send output to file like the other backends do.
+
+2002-07-28  Tim Waugh  <twaugh@redhat.com>
+
+	* backends/man.in: Report errors.
+
+	* helpers/docbook2man-spec.pl: Move handlers for &minus; and &copy;
+	to the right place.  Add handlers for &nbsp; and &thinsp;
+	(Philippe Batailler).
+
+2002-06-27  Tim Waugh  <twaugh@redhat.com>
+
+	* docbook-utils.spec: Renamed..
+	* docbook-utils.spec.in: ..to this.  Use @VERSION@.
+	* configure.in: Generate docbook-utils.spec.
+
+2002-06-27  Tim Waugh  <twaugh@redhat.com>
+
+	* configure.in, docbook-utils.spec: Version 0.6.11 (stable).
+
+2002-06-27  Tim Waugh  <twaugh@redhat.com>
+
+	* doc/man/Makefile.am: Use man1_MANS instead of man1_DATA, and the
+	same for man7.
+
+	* bin/jw.in, frontends/docbook.in: Apply patch from Mikhail Zebaluev
+	which implements a cleaner way to set paper size based on locale.
+
+	* bin/jw.in, frontends/docbook.in: Apply patch from Mikhail Zabaluev
+	which plugs in an SGML normalizer to obtain the real doctype
+	declaration for cases when other <!DOCTYPE declarations are snuck
+	inside comments.
+
+	* backends/txt: Use -nolist and -width=72 when using lynx.
+
+2002-05-16  Tim Waugh  <twaugh@redhat.com>
+
+	* helpers/docbook2man-spec.pl: Handle glosslists.
+
+	* helpers/docbook2man-spec.pl: Handle &copy;
+
+2002-05-01  Tim Waugh  <twaugh@redhat.com>
+
+	* configure.in: Version 0.6.10 (stable).
+
+2002-05-01  Tim Waugh  <twaugh@redhat.com>
+
+        * docbook-utils.dsl: Turn off %use-id-as-filename%.
+
+2002-04-26  Tim Waugh  <twaugh@redhat.com>
+
+	* backends/man.in: Re-run docbook2man-spec.pl if references need
+	resolving.
+
+2002-04-22  Tim Waugh  <twaugh@redhat.com>
+
+	* doc/HTML/Makefile.am, doc/man/Makefile.am: Fixes for
+	top_srcdir != top_builddir.
+
+	* doc/version.in: New file.
+	* doc/docbook-utils.sgml: Source version number from doc/version.
+	* doc/refentry/jw.sgml: Use SGML entity rather than '@VERSION@'.
+	* configure.in: Create doc/version from doc/version.in.  Don't
+	look for doc/HTML/jw.html.in or doc/man/jw.1.in any more.
+	* doc/HTML/Makefile.am: Add rule to create HTML output directly.
+	(Moved from Makefile.cvs).
+	* doc/man/Makefile.am: Add rule to create man output directly (moved
+	from Makefile.cvs).
+	* Makefile.cvs: Removed.
+	* bootstrap: New file.
+
+2002-04-19  Tim Waugh  <twaugh@redhat.com>
+
+	* frontends/Makefile.am: No need for EXTRA_DIST here.
+
+	* Makefile.cvs: Don't remove CVS directories at all.
+
+2002-04-18  Tim Waugh  <twaugh@redhat.com>
+
+	* backends/Makefile.am: Don't ship texi and man since they are
+	generated during configure.
+
+2002-04-18  Tim Waugh  <twaugh@redhat.com>
+
+	* Makefile.am: Ship the spec file.
+
+	* doc/man/Makefile.am: Explicitly list man pages.  Also ship them.
+	Except for jw.1 which is generated.
+
+	* Makefile.cvs: Copy in the autotool helper files rather than
+	distribute symlinks.
+
+	* Makefile.cvs: Use /etc/sgml/catalog rather than a more specific
+	catalog, in case this system doesn't split them out like we think.
+
+	* Makefile.cvs: It's okay for there to be no CVS directories to
+	remove.
+
+	* doc/refentry/jw.sgml: This file is part of a DocBook V3.1 document,
+	so remove the v4.1-ism and DOCTYPE declaration I added previously.
+
+	* AUTHORS: Add myself.
+
+2002-04-15  Tim Waugh  <twaugh@redhat.com>
+
+	* frontends/docbook.in: LC_PAPER-based stylesheet flavour selection
+	(if A4 paper is to be used, look for docbook-utils-a4.dsl).
+
+	* backends/dvi, backends/pdf, backends/ps: Set TEXINPUTS to
+	include the source file's directory.
+
+	* frontends/docbook.in: Handle symlinks with extra version info.
+
+	* frontends/docbook.in: Fix shell quoting.
+
+	* bin/jw.in: More robust XML/SGML detection.
+
+	* bin/jw.in: Add -V option.
+	* doc/refentry/jw.sgml: Document it.
+
+	* helpers/docbook2man-spec.pl: Better orderedlist output.
+
+	* bin/jw.in: Quoting.  Fixes --help output (for some reason).
+
+	* helpers/docbook2man-spec.pl: Handle some sdata (only 'minus' at
+	the moment).
+
+	* doc/refentry/jw.sgml: Various corrections and additions.
+	* helpers/docbook2man-spec.pl: Improvements to man page generation.
+
+	* bin/jw.in: Fix -o behaviour.
+
+	* bin/jw.in: Select the correct stylesheet for plain text output.
+	* backends/txt: Use links if lynx is not present.
+
+	* bin/jw.in: When delivering HTML with no-chunks, send output to
+	file rather than mingling it with stdout.
+
+	* backends/pdf: Redirect output to a file that tex doesn't use.
+	This fixes TOC-generation.
+
+	* bin/docbook2dvi, bin/docbook2html, bin/docbook2man, bin/docbook2pdf,
+	bin/docbook2ps, bin/docbook2rtf, bin/docbook2tex, bin/docbook2texi,
+	bin/docbook2txt: Better argument handling.
+
+	* bin/jw.in: Allow for custom backends.
+
+	* bin/jw.in: Handle filenames with multiple '.' characters.
+
+2001-05-23  Eric Bischoff <eric@caldera.de>
+
+	* doc/Makefile.am: small change - for the first time it works both on
+	  Caldera and RedHat - kind of hacky though
+
+	* switched to version 0.6.9
+
+2001-04-27  Eric Bischoff <eric@caldera.de>
+
+	* Makefile.cvs: "automake -a" flag is better now Mark removed install-sh
+	  and friends
+
+	* Reverting a lot of Makefile.am changes. This stuff is driving me crazy.
+
+	* switched to version 0.6.8
+
+2001-04-21  Mark Galassi <rosalia@galassi.org>
+
+	* starting to prepare a clean version
+
+2001-03-23  Eric Bischoff <eric@caldera.de>
+
+	* bin/sgmldiff.in: put location of "perl" and "nsgmls" under autoconf
+
+	* frontends/docbook.in: allow more complicated DTD numbers like 4.1.2
+
+	* .../Makefile.am: fixed (again!) problems with autoconf :-((
+
+	* switched to version 0.6.7
+
+2001-01-30  Eric Bischoff <eric@caldera.de>
+
+	* Fixed autoconf support on popular demand
+
+	* switched to version 0.6.6
+
+2001-01-19  Eric Bischoff <eric@caldera.de>
+
+	* Makefile.cvs, configure.in: put doc/man/jw.1 under autoconf
+
+	* switched to version 0.6.5
+
+2001-01-19  Eric Bischoff <eric@caldera.de>
+
+	* Makefile.cvs, configure.in: put doc/HTML/jw.html under autoconf
+
+	* doc/refentry/jw.sgml: added explanations about "--dsl default",
+	"--dsl none", -w and -e options
+
+	* switched to version 0.6.4
+
+2001-01-18  Eric Bischoff <eric@caldera.de>
+
+	* bin/jw.in: added -w and -e arguments for controlling warnings
+	and errors
+
+	* switched to version 0.6.3
+
+2001-01-12  Eric Bischoff <eric@caldera.de>
+
+	* Makefile.am: fixed EXTRA_DIST variable
+
+	* configure.in: fixed problem appearing when buildrooting
+
+	* switched to version 0.6.2
+
+2000-12-06  Eric Bischoff <eric@caldera.de>
+
+	* bin/jw.in: added explanations about --dcl option
+
+	* switched to version 0.6.1
+
+2000-11-09  Eric Bischoff <eric@caldera.de>
+
+	* bin/jw.in, frontends/docbook, doc/*: added support for
+	XML.
+
+	* switched to version 0.6
+
+2000-11-09  Eric Bischoff <eric@caldera.de>
+
+	* docbook-utils.dsl: added some magic so the mediaobject
+	uses EPS when printing and other formats when putting online.
+	I'm not sure this choice is correct for non-TeX printing
+	formats like RTF or PDF though - might need be fixed later.
+
+	* switched to version 0.5.7
+
+2000-10-27  Eric Bischoff <eric@caldera.de>
+
+	* doc/Makefile.am: RPM 4.0 now refuses buildrooted absolute
+	symbolic links. Let's please him.
+
+	* switched to version 0.5.6
+
+2000-09-23  Eric Bischoff <eric@caldera.de>
+
+	* frontends/docbook: the first version number of the DTD
+	is the one to use to determine the catalog - this
+	allows variants with their own version number
+	(see http://www.docbook.org/tdg/html/ch05.html#S-NOTDOCBOOK)
+
+	* switched to version 0.5.5
+
+2000-09-12  Eric Bischoff <eric@caldera.de>
+
+	* doc/HTML/Makefile.am: path to HTML pages is not hardcoded
+	anymore but determined through configure.
+
+	* switched to version 0.5.4
+
+2000-09-12  Eric Bischoff <eric@caldera.de>
+
+	* doc/man/Makefile.am: path to man pages is not hardcoded
+	anymore but determined through configure.
+
+	* switched to version 0.5.3
+
+2000-08-15  Eric Bischoff <eric@caldera.de>
+
+	* doc: removed the conflict between docbook2man and
+	docbook2man-spec.pl, same for docbook2texi and
+	docbook2texi-spec.pl.
+
+2000-08-12  Eric Bischoff <eric@caldera.de>
+
+	* docbook-utils.dsl: the output directory must not be
+	defined in the style sheet. The shell scripts do not know
+	what's happening in the style sheets and therefore are
+	unable to create this directory if it did not exist previously.
+
+	* switched to version 0.5.2
+
+2000-08-10  Eric Bischoff <eric@caldera.de>
+
+	* backends/pdf: unconditionally re-run pdfjadetex
+	so very simple files get converted correctly as well
+
+	* switched to version 0.5.1
+
+2000-08-07  Eric Bischoff <eric@caldera.de>
+
+	* Makefile.cvs: HTML and man pages must be created at
+	tarball generation time
+
+	* doc/Makefile.am: readded symbolic links generation at install
+	time for docbook2* man pages
+
+	* switched to version 0.5
+
+2000-08-04  Eric Bischoff <eric@caldera.de>
+
+	* docbook-utils.dsl: commented out eurocentric reference to
+	A4 paper
+
+	* docbook-utils.spec: removed because a SPEC file should
+	reside outside of the package's sources
+
+	* ABOUT: Mark saved it as "README". Removed it to avoid
+	having a duplicate file.
+
+	* Makefile.am: ABOUT => README as well
+
+	* AUTHORS: added scripts and documentation authors
+
+	* LICENCE: renamed as COPYING to follow GNU conventions
+
+	* doc/Makefile.am: pre-built man and HTML pages again
+
+	* bin/: removed db2* and docbook-build scripts to have a
+	clearer design,
+	put sgmldiff under autoconf
+
+	* bin/jw now takes docbook-utils.dsl as a default stylesheet, but
+	it is still possible to have alternate stylesheets or to use
+	Norm's style
+
+	* backends/: put man and texi under autoconf as well
+
+	* frontends/: put docbook under autoconf
+
+2000-08-03  Mark Galassi  <rosalia@galassi.org>
+
+	* docbook-utils.spec (Prereq): took out the prereq for perl-sgmls,
+	since perl-SGMLSpm has replaced that.
+	(Release): upped the release number, since I changed the .spec
+	file.
+
+	* frontends/docbook: fixed a problem where the user might have had
+	a <!docbook instead of <!DOCBOOK at the beginning.  I added -i to
+	the "grep" that looks for this string.
+
+	* doc/Makefile.am: improved the rendering by adding the -dsl
+	docbook-utils.dsl option.
+
+	* bin/docbook2*: new names for the programs.
+
+	* bin/Makefile.am (primitive_scripts): added the docbook2html (and
+	so forth) names, as well as the db2html (and so forth) ones.
+	These will eventually be the names of the tools.
+
+	* docbook-utils.spec: upped the release number and added some
+	prerequisites.
+
+2000-07-23  Mark Galassi  <rosalia@galassi.org>
+
+	* docbook-utils.spec, configure.in: changed version to 0.4
+
+2000-07-21  Mark Galassi  <rosalia@galassi.org>
+
+	* docbook-utils.spec: updated spec file to work with the new
+	automake-based approach.  You can now use
+		rpm -ta docbook-utils-VERSION.tar.gz
+	to build the RPM.
+
+	* doc/Makefile.am (install-data-local): took out .gif and .png
+	installation for now.
+

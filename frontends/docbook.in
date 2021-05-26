@@ -1,0 +1,52 @@
+# Frontend to convert a docbook file into something else
+# Send any comments to Eric Bischoff <eric@caldera.de>
+# This program is under GPL license. See LICENSE file for details.
+
+case "$1" in
+# Give the location of the centralized catalog
+# First try the one with a version matching the version that is indicated in the document
+  centralized-catalog)
+	if [ -n "$SGML_NORM" ]; then
+	  SGML_NORM_OPTS='-d'
+	else
+	  SGML_NORM=cat
+	  SGML_NORM_OPTS=
+	fi
+	SGML_VERSION=`"$SGML_NORM" $SGML_NORM_OPTS -- "$SGML_FILE" 2>/dev/null |
+			grep -i '<!DOCTYPE' |
+			head -n 1 |
+			sed 's/^.*DocBook\( XML\)\? V\([0-9][\.0-9]*\).*$/\2/'`
+	SGML_CATALOG=
+	for f in "${SGML_CATALOGS_DIR}/${SGML_XML}-docbook-${SGML_VERSION}"*".cat"
+	do 
+	  if [ -f "$f" ]
+	  then
+	    SGML_CATALOG=$f
+	    break
+	  fi
+	done
+	if [ -z "$SGML_CATALOG" ]
+	then
+	  if [ "${SGML_XML}" != "sgml" ]
+	  then SGML_CATALOG=${SGML_CATALOGS_DIR}/${SGML_XML}-docbook.cat
+	  else SGML_CATALOG=${SGML_CATALOGS_DIR}/catalog
+	  fi
+	fi
+	echo "$SGML_CATALOG"
+	;;
+# Find a stylesheet on the model "html/docbook.dsl" or "print/docbook.dsl"
+  style-sheet)
+	case $SGML_STYLESHEET in
+	  default)
+	    echo "${SGML_BASE_DIR}/docbook/utils-@VERSION@/docbook-utils.dsl#${SGML_TYPE}"
+	    ;;
+	  none)
+	    find $SGML_BASE_DIR -name docbook.dsl | grep "$SGML_TYPE/docbook.dsl" | awk '{print $1}'
+	    ;;
+	esac
+        ;;
+  *)    exit 1
+	;;
+esac
+
+exit 0

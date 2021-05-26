@@ -1,0 +1,169 @@
+<RefEntry id="docbook2man">
+
+<RefMeta>
+<RefEntryTitle>docbook2man-spec.pl</RefEntryTitle>
+<ManVolNum>1</ManVolNum>
+</RefMeta>
+
+<RefNameDiv>
+<RefName>docbook2man-spec.pl</RefName>
+<RefPurpose>convert DocBook RefEntries to man pages</RefPurpose>
+</RefNameDiv>
+
+<RefSynopsisDiv>
+<CmdSynopsis>
+<Command>sgmlspl</command>
+<Arg choice=req>docbook2man-spec.pl</arg>
+</CmdSynopsis>
+
+<!-- docbook2man-spec.pl BREAKAGE HERE! -->
+
+<CmdSynopsis>
+<Command>nsgmls</command>
+<Arg><Replaceable>sgml document</replaceable></Arg>
+<Command>| sgmlspl</command>
+<Arg choice=req>docbook2man-spec.pl</arg>
+</CmdSynopsis>
+</RefSynopsisDiv>
+
+<RefSect1>
+<Title>Description</Title>
+
+<Para>
+<Application>docbook2man</application> is a sgmlspl spec file that produced man
+pages (using the -man macros) from DocBook RefEntry markup.
+</Para>
+
+<Para>
+The program reads ESIS produced by nsgmls (or other SGML parsers) from
+standard input.  Markup not found in RefEntry is discarded.
+</Para>
+
+<Para>
+Its output, the converted man pages, are written to the current directory.  If
+<SGMLTag>RefMeta</sgmltag> information is not specified in a
+<SGMLTag>RefEntry</sgmltag>, then the man page will be written to standard
+output.
+</Para>
+
+<Para>
+The file <Filename>manpage.links</filename> will also be created, which contains
+any aliases of the manpages generated.  This file is in the format:
+
+<Synopsis>
+<Token><Replaceable>man page</replaceable></Token> <Token><Replaceable>alias
+manpage</replaceable></Token>
+</Synopsis>
+</Para>
+
+<Para>
+The <Filename>manpage.refs</filename> file keeps track of
+<SGMLTag>XRef</sgmltag> references.  Note that if the input document has any
+forward references, then <Application>docbook2man</application> may have to be
+invoked twice (the first time updating <Filename>manpage.refs</filename>) to
+resolve them.
+</Para>
+
+</RefSect1>
+
+<RefSect1>
+<Title>Requirements</Title>
+
+<SimpleList>
+<Member>
+The SGMLSpm package from CPAN.  This package includes the sgmlspl script
+that is also needed.
+</Member>
+</SimpleList>
+
+</RefSect1>
+
+
+<RefSect1>
+<Title>Limitations</Title>
+
+<Para>
+Trying <Application>docbook2man</application> on non-DocBook or non-conformant
+SGML results in undefined behavior. :-)
+</Para>
+
+<Para>
+This program is a slow, dodgy Perl script.
+</Para>
+
+<Para>
+This program does not come close to supporting all the possible markup
+in DocBook, and may produce wrong output in some cases with supported
+markup.
+</Para>
+
+</RefSect1>
+
+<RefSect1>
+<Title>To do</Title>
+
+<Para>
+Obvious stuff:
+
+<ItemizedList>
+
+<ListItem><Para> Fix <Application>docbook2man</application> breakages found in
+the test documents, especially
+<Filename>weird.sgml</filename>.</Para></ListItem>
+
+<ListItem><Para>
+Add new element handling and fix existing handling.  
+Be robust.  
+</Para></ListItem>
+
+<ListItem><Para> Produce cleanest, readable man output as possible (unlike some
+other converters).  Follow Linux
+<CiteRefEntry><RefEntryTitle>man</refentrytitle><ManVolNum>7</manvolnum></CiteRefEntry>
+convention.  As conversion to man pages is usually not done very often, it is
+better to be slower/more complicated than to produce wrong output.  Also if
+someone wants to give up using DocBook for whatever reason, the last-converted
+man pages can then be maintained manually.  </Para></ListItem>
+
+<ListItem>
+<Para>Make it faster. I think most of the speed problems so far is with parsing
+ESIS.  Rewrite <Filename>SGMLS.pm</filename> with C and/or get input directly
+from <Application>SP</application>.
+</Para>
+</ListItem>
+
+<ListItem>
+<Para>Support other (human) languages.  But what to do with non-ASCII charsets?
+SGMLSpm doesn't report them and <Application>roff</application> does not grok them.
+</Para></ListItem>
+
+</ItemizedList>
+
+<Comment>text after enclosed lists (and SS blocks) will break docbook2man</Comment>
+If we do this, more people can use DocBook.
+</Para>
+
+</RefSect1>
+
+<RefSect1>
+<Title>Copyright</Title>
+
+<Para>
+Copyright (C) 1998-1999 Steve Cheng <Email>steve@ggi-project.org</email>
+</Para>
+
+<Para>
+This program is free software; you can redistribute it and/or modify it
+under the terms of the GNU General Public License as published by the
+Free Software Foundation; either version 2, or (at your option) any
+later version.
+</Para>
+
+<Para>
+You should have received a copy of the GNU General Public License along with
+this program; see the file <Filename>COPYING</filename>.  If not, please write
+to the Free Software Foundation, 675 Mass Ave, Cambridge, MA 02139, USA.
+</Para>
+
+</RefSect1>
+</RefEntry>
+

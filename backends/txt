@@ -1,0 +1,38 @@
+# Backend to convert something into ASCII text
+# Send any comments to Eric Bischoff <eric@caldera.de>
+# This program is under GPL license. See LICENSE file for details.
+
+if [ -x /usr/bin/lynx ]
+then
+  CONVERT=/usr/bin/lynx
+  ARGS="-force_html -dump -nolist -width=72"
+elif [ -x /usr/bin/links ]
+then
+  CONVERT=/usr/bin/links
+  ARGS="-dump"
+elif [ -x /usr/bin/w3m ]
+then
+  CONVERT=/usr/bin/w3m
+  ARGS="-dump"
+else
+  echo >&2 "No way to convert HTML to text found."
+  exit 1
+fi
+
+HTML=$(mktemp /tmp/html-XXXXXX) || exit 1
+trap 'rm -f "$HTML"; exit' 0 1 2 3 7 13 15
+
+# Convert to HTML
+$SGML_JADE -V nochunks -t sgml ${SGML_ARGUMENTS} >${HTML}
+if [ $? -ne 0 ]
+then exit 1
+fi
+
+# Convert from HTML to ASCII
+${CONVERT} ${ARGS} ${HTML} > "${SGML_FILE_NAME}.txt"
+if [ $? -ne 0 ]
+then
+  exit 2
+fi
+
+exit 0

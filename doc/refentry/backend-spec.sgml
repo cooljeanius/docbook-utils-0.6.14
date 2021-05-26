@@ -1,12 +1,12 @@
 <refentry id="backend-spec">
-  <docinfo>
+  <refentryinfo>
     <author>
       <firstname>Jochem</firstname> <surname>Huhmann</surname>
       <affiliation>
         <address><email>joh@revier.com</email></address>
       </affiliation>
     </author>
-  </docinfo>
+  </refentryinfo>
   <refmeta>
     <refentrytitle>backend-spec</refentrytitle>
     <manvolnum>7</manvolnum>

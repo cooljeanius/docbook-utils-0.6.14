@@ -22,13 +22,13 @@
 
 use strict;
 use integer;
-use vars qw($nsgmls $errors $errorlog $VERSION);
+use vars qw($onsgmls $errors $errorlog $VERSION);
 use Getopt::Long 2.01;
 
 $VERSION = 1.03;
 
-my $nsgmls;
-$nsgmls = "@jade_bindir@/nsgmls";
+my $onsgmls;
+$onsgmls = "@jade_bindir@/onsgmls";
 
 #----------------------------------------------------------------------
 # TODO:
@@ -37,7 +37,7 @@ $nsgmls = "@jade_bindir@/nsgmls";
 # - Wait for suggestions ;-)
 # 
 # Note: the input file need not be valid, nor is it necessary to have 
-# the DTDs.  nsgmls always returns a structure.
+# the DTDs.  onsgmls always returns a structure.
 #----------------------------------------------------------------------
 
 # Get file name
@@ -141,11 +141,11 @@ unlink $diff1;
 unlink $diff2;
 
 #---------------------------------------------------------------------
-# Process nsgmls output: keep all stuff that is important for the
+# Process onsgmls output: keep all stuff that is important for the
 # structure comparison.  Make two structures: one that is diffed
 # (without text) (DIFF) and one that is used to present the
 # differences to the user (@full).  For more info: see SP
-# documentation, nsgmls output format.
+# documentation, onsgmls output format.
 
 sub prepare {
     my($filename,$todiffname) = @_;
@@ -161,7 +161,7 @@ sub prepare {
     my @line_numbered = ();
     my $line = 0;
 
-    open(ESIS, "$nsgmls -l $errors $errorlog -onotation-sysid -oid -oempty $filename | ");  #-oentity generates strange output; ? -ononsgml
+    open(ESIS, "$onsgmls -l $errors $errorlog -onotation-sysid -oid -oempty $filename | ");  #-oentity generates strange output; ? -ononsgml
     open(DIFF, "> $todiffname");
     while (<ESIS>) {
 	chomp $_;
@@ -375,7 +375,7 @@ sub prepare {
 };
 
 #----------------------------------------------------------------------
-# Normalise data text from nsgmls (i.e. don't print the escaped text).
+# Normalise data text from onsgmls (i.e. don't print the escaped text).
 sub normalise_text {
     my($string,$prefix) = @_;
     my $result = "$prefix";

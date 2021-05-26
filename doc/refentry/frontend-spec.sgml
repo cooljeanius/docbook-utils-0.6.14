@@ -1,12 +1,12 @@
 <refentry id="frontend-spec">
-  <docinfo>
+  <refentryinfo>
  <author>
    <firstname>Eric</firstname> <surname>Bischoff</surname>
    <affiliation>
      <address><email>ebisch@cybercable.tm.fr</email></address>
    </affiliation>
  </author>
-  </docinfo>
+  </refentryinfo>
   <refmeta>
  <refentrytitle>frontend-spec</refentrytitle>
  <manvolnum>7</manvolnum>

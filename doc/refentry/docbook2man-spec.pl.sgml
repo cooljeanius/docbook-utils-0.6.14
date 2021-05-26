@@ -138,7 +138,7 @@ SGMLSpm doesn't report them and <Application>roff</application> does not grok th
 
 </ItemizedList>
 
-<Comment>text after enclosed lists (and SS blocks) will break docbook2man</Comment>
+<!-- text after enclosed lists (and SS blocks) will break docbook2man -->
 If we do this, more people can use DocBook.
 </Para>
 

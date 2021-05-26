@@ -10,7 +10,7 @@ CLEANFILES=$(man1_MANS) $(man7_MANS) manpage.*
 
 $(man1_MANS) $(man7_MANS): $(top_srcdir)/doc/docbook-utils.sgml \
 		$(top_srcdir)/helpers/docbook2man-spec.pl
-	SGML_CATALOG_FILES=/etc/sgml/catalog \
+	SGML_CATALOG_FILES=$(prefix)/etc/sgml/catalog \
 	SGML_SEARCH_PATH=$(top_srcdir)/doc:.. \
-		nsgmls $< | \
+		onsgmls $< | \
 		sgmlspl $(top_srcdir)/helpers/docbook2man-spec.pl

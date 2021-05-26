@@ -1,4 +1,4 @@
-<!DOCTYPE book PUBLIC "-//OASIS//DTD DocBook V3.1//EN" [
+<!DOCTYPE book PUBLIC "-//OASIS//DTD DocBook V4.2//EN" [
   <!ENTITY jw SYSTEM "refentry/jw.sgml">
   <!ENTITY docbook2man SYSTEM "refentry/docbook2man-spec.pl.sgml">
   <!ENTITY docbook2texi SYSTEM "refentry/docbook2texi-spec.pl.sgml">
@@ -61,11 +61,11 @@
   </bookinfo>
 
   <chapter id="introduction">
-    <docinfo>
+    <chapterinfo>
       <author>
         <firstname>Eric</firstname> <surname>Bischoff</surname>
       </author>
-    </docinfo>
+    </chapterinfo>
     <title>Introduction</title>
 
     <para>The DocBook-utils are a collection of various utilites to
@@ -143,11 +143,11 @@
   </chapter>
 
   <chapter id="intro-jw">
-    <docinfo>
+    <chapterinfo>
       <author>
         <firstname>Jochem</firstname> <surname>Huhmann</surname>
       </author>
-    </docinfo>
+    </chapterinfo>
     <title>jw</title>
 
 <sect1>
@@ -220,11 +220,11 @@
   </chapter>
 
   <chapter id="intro-sgmldiff">
-    <docinfo>
+    <chapterinfo>
       <author>
         <firstname>Frederik</firstname> <surname>Fouvry</surname>
       </author>
-    </docinfo>
+    </chapterinfo>
     <title>sgmldiff</title>
 
     <para><citerefentry> <refentrytitle>sgmldiff</refentrytitle>

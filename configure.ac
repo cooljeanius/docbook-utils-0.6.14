@@ -20,6 +20,9 @@ done
 AM_INIT_AUTOMAKE
 
 docdir='$(prefix)/doc'
+if test -n "${prefix}" && test -d "${prefix}/share/doc"; then
+  docdir='$(prefix)/share/doc'
+fi
 AC_SUBST([docdir])dnl
 
 dnl# Checks for programs.
@@ -29,7 +32,7 @@ jade_bindirs="/usr/bin /usr/local/bin"
 if test -n "${prefix}" && test -d "${prefix}" && test "${prefix}" != "/usr/local"; then
   jade_bindirs="${jade_bindirs} ${prefix}/bin"
 fi
-AC_FIND_PROGRAM([nsgmls],[${jade_bindirs}],[jade_bindir])dnl
+AC_FIND_PROGRAM([nsgmls onsgmls],[${jade_bindirs}],[jade_bindir])
 AC_SUBST([jade_bindir])dnl
 
 perl_bindirs="/usr/bin /usr/local/bin"

@@ -2467,6 +2467,9 @@ fi
 
 
 docdir='$(prefix)/doc'
+if test -n "${prefix}" && test -d "${prefix}/share/doc"; then
+  docdir='$(prefix)/share/doc'
+fi
 
 { printf "%s\n" "$as_me:${as_lineno-$LINENO}: checking whether ln -s works" >&5
 printf %s "checking whether ln -s works... " >&6; }
@@ -2487,13 +2490,14 @@ fi
 
 jade_bindir=""
 for i in ${jade_bindirs}; do
-  for j in nsgmls; do
+  for j in nsgmls onsgmls; do
     if test -x "$i/$j"; then
       jade_bindir=$i
       break 2
     fi
   done
 done
+
 
 perl_bindirs="/usr/bin /usr/local/bin"
 if test -n "${prefix}" && test -d "${prefix}" && test "${prefix}" != "/usr/local"; then

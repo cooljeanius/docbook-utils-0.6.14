@@ -1,4 +1,4 @@
-htmldir	  = $(docdir)/html/docbook-utils-@VERSION@
+htmldir = $(docdir)/docbook-utils-@VERSION@/html
 html_DATA = api.html \
 	backend-spec.html \
 	docbook2man.html \
@@ -23,8 +23,8 @@ $(html_DATA): $(top_srcdir)/doc/docbook-utils.sgml \
 		$(top_srcdir)/doc/refentry/docbook2texi-spec.pl.sgml \
 		$(top_srcdir)/doc/refentry/frontend-spec.sgml \
 		$(top_srcdir)/doc/refentry/sgmldiff.sgml
-	SGML_CATALOG_FILES=/etc/sgml/catalog \
+	SGML_CATALOG_FILES=$(prefix)/etc/sgml/catalog \
 	SGML_SEARCH_PATH=$(top_srcdir):$(top_srcdir)/doc:.. \
-		jade -t sgml -i html -d $(top_srcdir)/docbook-utils.dsl\#html \
+		openjade -t sgml -i html -d $(top_srcdir)/docbook-utils.dsl\#html \
 			-V '%use-id-as-filename%' $<
 

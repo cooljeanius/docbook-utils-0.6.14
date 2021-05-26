@@ -2,6 +2,7 @@ dnl#                                               -*- Autoconf -*-
 dnl# Process this file with autoconf to produce a configure script.
 AC_INIT([docbook-utils],[0.6.14],[ebisch@cybercable.tm.fr])
 AC_CONFIG_SRCDIR([Makefile.am])
+AC_CONFIG_AUX_DIR([build-aux])dnl
 
 AC_DEFUN([AC_FIND_PROGRAM],
 [

@@ -1,3 +1,5 @@
 build-aux/install-sh linguist-vendored
 build-aux/missing linguist-vendored
+Makefile.in linguist-vendored
 ChangeLog    merge=cl-merge
+*.pl diff=perl

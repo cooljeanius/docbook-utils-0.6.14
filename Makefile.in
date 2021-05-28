@@ -316,6 +316,7 @@ sgmldu_DATA = docbook-utils.dsl
 EXTRA_DIST = AUTHORS README COPYING INSTALL NEWS ChangeLog TODO \
 	$(sgmldu_DATA) docbook-utils.spec
 
+MAINTAINERCLEANFILES = *~ autoscan.log
 all: all-recursive
 
 .SUFFIXES:
@@ -717,6 +718,7 @@ distclean-generic:
 maintainer-clean-generic:
 	@echo "This command is intended for maintainers to use"
 	@echo "it deletes files that may require special tools to rebuild."
+	-test -z "$(MAINTAINERCLEANFILES)" || rm -f $(MAINTAINERCLEANFILES)
 clean: clean-recursive
 
 clean-am: clean-generic mostlyclean-am

@@ -33,6 +33,7 @@ Software Foundation, 675 Mass Ave, Cambridge, MA 02139, USA.
 
 =cut
 
+#! /usr/bin/env perl
 # $Id: docbook2man-spec.pl,v 1.11 2010/10/04 10:23:31 ovasik Exp $
 
 use SGMLS;			# Use the SGMLS package.

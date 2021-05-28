@@ -29,6 +29,7 @@ Software Foundation, 675 Mass Ave, Cambridge, MA 02139, USA.
 
 =cut
 
+#! /usr/bin/env perl
 # $Id: docbook2texi-spec.pl,v 1.1 2000/07/21 20:22:30 rosalia Exp $
 
 use SGMLS;			# Use the SGMLS package.

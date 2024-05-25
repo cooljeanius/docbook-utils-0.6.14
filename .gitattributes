@@ -3,3 +3,4 @@ build-aux/missing linguist-vendored
 Makefile.in linguist-vendored
 ChangeLog    merge=cl-merge
 *.pl diff=perl
+*.pl linguist-language=perl
